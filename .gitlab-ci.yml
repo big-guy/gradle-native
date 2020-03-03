@@ -8,6 +8,10 @@ build:
     paths:
       - subprojects/docs/build/
 
+test:
+  stage: test
+  script: ./gradlew check
+
 deploy:
   stage: deploy
   script: gradle bintrayUpload
