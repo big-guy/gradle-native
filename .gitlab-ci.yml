@@ -7,6 +7,10 @@ build:
 test:
   stage: test
   script: ./gradlew check
+  artifacts:
+    paths:
+      - subprojects/platformJni/build/reports/tests/functionalTest
+      - subprojects/docs/build/reports/tests/docsTest
 
 deploy:
   stage: deploy
