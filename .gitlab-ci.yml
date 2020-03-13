@@ -14,9 +14,9 @@ test:
   artifacts:
     when: on_failure
     paths:
-      - subprojects/platformJni/build/tmp/test files
-      - subprojects/platformJni/build/reports/tests
-      - subprojects/docs/build/rmp/test files
+      - subprojects/platform-jni/build/tmp/test files
+      - subprojects/platform-jni/build/reports/tests
+      - subprojects/docs/build/tmp/test files
       - subprojects/docs/build/reports/tests
 
 deploy:
