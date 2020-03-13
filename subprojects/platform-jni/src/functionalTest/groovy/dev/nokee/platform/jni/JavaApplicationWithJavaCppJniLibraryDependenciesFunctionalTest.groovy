@@ -1,9 +1,10 @@
 package dev.nokee.platform.jni
 
-
 import dev.gradleplugins.integtests.fixtures.nativeplatform.AbstractInstalledToolChainIntegrationSpec
 import dev.gradleplugins.test.fixtures.file.TestFile
 import dev.nokee.platform.jni.fixtures.GreeterAppWithJniLibrary
+
+import java.util.concurrent.TimeUnit
 
 class JavaApplicationWithJavaCppJniLibraryDependenciesFunctionalTest extends AbstractInstalledToolChainIntegrationSpec  {
 	private void makeComponentWithLibrary() {
@@ -71,6 +72,10 @@ class JavaApplicationWithJavaCppJniLibraryDependenciesFunctionalTest extends Abs
 		file('cpp-library/build.gradle') << '''
 			plugins {
 				id 'cpp-library'
+			}
+
+			library {
+				linkage = [Linkage.STATIC]
 			}
 		'''
 	}
@@ -156,6 +161,10 @@ class JavaApplicationWithJavaCppJniLibraryDependenciesFunctionalTest extends Abs
 
 			group = 'com.example'
 			version = '4.2'
+
+			library {
+				linkage = [Linkage.STATIC]
+			}
 		'''
 	}
 
