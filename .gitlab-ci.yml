@@ -10,12 +10,14 @@ build:
 
 test:
   stage: test
-  script: ./gradlew check
+  script: ./gradlew check --continue
   artifacts:
     when: on_failure
     paths:
-      - subprojects/platformJni/build/reports/tests/functionalTest
-      - subprojects/docs/build/reports/tests/docsTest
+      - subprojects/platformJni/build/tmp/test files
+      - subprojects/platformJni/build/reports/tests
+      - subprojects/docs/build/rmp/test files
+      - subprojects/docs/build/reports/tests
 
 deploy:
   stage: deploy
