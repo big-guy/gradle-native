@@ -77,6 +77,15 @@ class JavaApplicationWithJavaCppJniLibraryDependenciesFunctionalTest extends Abs
 			library {
 				linkage = [Linkage.STATIC]
 			}
+
+			tasks.withType(LinkSharedLibrary) {
+				linkerArgs.addAll(toolChain.map { toolChain ->
+					if (toolChain instanceof Gcc) {
+						return ['-fPIC']
+					}
+					return []
+				})
+			}
 		'''
 	}
 
@@ -145,8 +154,8 @@ class JavaApplicationWithJavaCppJniLibraryDependenciesFunctionalTest extends Abs
 			}
 
 			tasks.withType(LinkSharedLibrary) {
-				linkerArgs.addAll(toolChains.map { toolChain ->
-					if (toolChain is Gcc) {
+				linkerArgs.addAll(toolChain.map { toolChain ->
+					if (toolChain instanceof Gcc) {
 						return ['-fPIC']
 					}
 					return []
