@@ -143,6 +143,10 @@ class JavaApplicationWithJavaCppJniLibraryDependenciesFunctionalTest extends Abs
 					nativeImplementation 'com.example:cpp-library:4.2'
 				}
 			}
+
+			tasks.withType(LinkSharedLibrary) {
+				linkerArgs.add('-v')
+			}
 		'''
 		file('java-library/settings.gradle') << "rootProject.name = 'java-library'"
 		file('java-library/build.gradle') << '''
