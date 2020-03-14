@@ -145,7 +145,12 @@ class JavaApplicationWithJavaCppJniLibraryDependenciesFunctionalTest extends Abs
 			}
 
 			tasks.withType(LinkSharedLibrary) {
-				linkerArgs.add('-v')
+				linkerArgs.addAll(toolChains.map { toolChain ->
+					if (toolChain is Gcc) {
+						return ['-fPIC']
+					}
+					return []
+				})
 			}
 		'''
 		file('java-library/settings.gradle') << "rootProject.name = 'java-library'"
