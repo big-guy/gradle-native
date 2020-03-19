@@ -67,7 +67,7 @@ public class CommandDiscovery {
 			attributes.containsKey("allow-additional-output"),
 			attributes.containsKey("allow-disordered-output"),
 			Collections.emptyList(),
-			OnlyIfCondition.of(Objects.toString(attributes.get("only-if"))));
+			OnlyIfCondition.of(Objects.toString(attributes.get("only-if"), null)));
 		commands.add(command);
 		return nextCommand;
 	}
