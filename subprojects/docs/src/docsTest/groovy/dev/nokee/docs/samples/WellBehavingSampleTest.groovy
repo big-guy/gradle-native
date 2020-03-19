@@ -253,8 +253,35 @@ abstract class WellBehavingSampleTest extends Specification {
 
 			String stdout = unzipTo(inputFile, outputDirectory)
 			// unzip add extra newline but also have extra tailing spaces
-			stdout = stdout.readLines().collect { StringUtils.stripEnd(it, ' ')}.join('\n')
-			assert stdout.replace(testDirectory.absolutePath, '/Users/daniel') == command.expectedOutput.get()
+			stdout = stdout.readLines().collect { StringUtils.stripEnd(it, ' ') }.join('\n')
+
+			// TODO: Model the output instead of relying on poor-man string comparision
+			assert verify(command.expectedOutput.get(), stdout.replace(testDirectory.absolutePath, '/Users/daniel'))
+		}
+
+		void verify(final String expected, final String actual) {
+			// ArrayList does not support removal, and deletions for linked lists are O(1)
+			LinkedList<String> expectedLines = new LinkedList<>(Arrays.asList(expected.replaceAll("(\\r?\\n)+", "\n").split("\\r?\\n")));
+			LinkedList<String> unmatchedLines = new LinkedList<>(Arrays.asList(actual.replaceAll("(\\r?\\n)+", "\n").split("\\r?\\n")));
+
+			for (String expectedLine : expectedLines) {
+				String matchedLine = null;
+				for (String unmatchedLine : unmatchedLines) {
+					if (unmatchedLine.equals(expectedLine)) {
+						matchedLine = unmatchedLine;
+					}
+				}
+				if (matchedLine != null) {
+					unmatchedLines.remove(matchedLine);
+				} else {
+					Assert.fail(String.format("Line missing from output.%n%s%n---%nActual output:%n%s%n---", expectedLine, actual));
+				}
+			}
+
+			if (!(allowAdditionalOutput || unmatchedLines.isEmpty())) {
+				String unmatched = StringUtils.join(unmatchedLines, System.lineSeparator());
+				Assert.fail(String.format("Extra lines in output.%n%s%n---%nActual output:%n%s%n---", unmatched, actual));
+			}
 		}
 	}
 
