@@ -150,7 +150,7 @@ abstract class WellBehavingSampleTest extends Specification {
 	}
 
 	private List<? super Comm> wrap(List<Command> commands) {
-		commands.collect { command ->
+		commands.findAll { it.canExecute() }.collect { command ->
 			if (command.executable == './gradlew') {
 				return new GradleWrapperCommand(command)
 			} else if (command.executable == 'ls') {
