@@ -12,8 +12,8 @@ import dev.gradleplugins.test.fixtures.gradle.executer.OutputScrapingExecutionRe
 import dev.gradleplugins.test.fixtures.logging.ConsoleOutput
 import dev.nokee.docs.fixtures.Command
 import dev.nokee.docs.fixtures.SampleContentFixture
+import dev.nokee.docs.fixtures.UnzipCommandHelper
 import groovy.transform.ToString
-import org.apache.commons.lang3.StringUtils
 import org.junit.Rule
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -253,35 +253,9 @@ abstract class WellBehavingSampleTest extends Specification {
 
 			String stdout = unzipTo(inputFile, outputDirectory)
 			// unzip add extra newline but also have extra tailing spaces
-			stdout = stdout.readLines().collect { StringUtils.stripEnd(it, ' ') }.join('\n')
+			stdout = stdout.replace(testDirectory.absolutePath, '/Users/daniel')
 
-			// TODO: Model the output instead of relying on poor-man string comparision
-			verify(command.expectedOutput.get(), stdout.replace(testDirectory.absolutePath, '/Users/daniel'))
-		}
-
-		void verify(final String expected, final String actual) {
-			// ArrayList does not support removal, and deletions for linked lists are O(1)
-			LinkedList<String> expectedLines = new LinkedList<>(Arrays.asList(expected.replaceAll("(\\r?\\n)+", "\n").split("\\r?\\n")));
-			LinkedList<String> unmatchedLines = new LinkedList<>(Arrays.asList(actual.replaceAll("(\\r?\\n)+", "\n").split("\\r?\\n")));
-
-			for (String expectedLine : expectedLines) {
-				String matchedLine = null;
-				for (String unmatchedLine : unmatchedLines) {
-					if (unmatchedLine.equals(expectedLine)) {
-						matchedLine = unmatchedLine;
-					}
-				}
-				if (matchedLine != null) {
-					unmatchedLines.remove(matchedLine);
-				} else {
-					Assert.fail(String.format("Line missing from output.%n%s%n---%nActual output:%n%s%n---", expectedLine, actual));
-				}
-			}
-
-			if (!unmatchedLines.isEmpty()) {
-				String unmatched = StringUtils.join(unmatchedLines, System.lineSeparator());
-				Assert.fail(String.format("Extra lines in output.%n%s%n---%nActual output:%n%s%n---", unmatched, actual));
-			}
+			assert UnzipCommandHelper.Output.parse(stdout) == UnzipCommandHelper.Output.parse(command.expectedOutput.get())
 		}
 	}
 
