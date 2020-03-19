@@ -1,5 +1,8 @@
 package dev.nokee.docs.samples
 
+
+import dev.gradleplugins.integtests.fixtures.nativeplatform.AvailableToolChains
+import dev.gradleplugins.integtests.fixtures.nativeplatform.ToolChainRequirement
 import dev.gradleplugins.spock.lang.CleanupTestDirectory
 import dev.gradleplugins.spock.lang.TestNameTestDirectoryProvider
 import dev.gradleplugins.test.fixtures.file.TestFile
@@ -131,8 +134,11 @@ abstract class WellBehavingSampleTest extends Specification {
 		dsl << [GradleScriptDsl.GROOVY_DSL, GradleScriptDsl.KOTLIN_DSL]
 	}
 
+	AvailableToolChains.InstalledToolChain toolChain;
 	@Unroll
 	def "can execute commands successfully"(dsl) {
+		toolChain = AvailableToolChains.getToolChain(ToolChainRequirement.AVAILABLE)
+
 		def fixture = new SampleContentFixture(sampleName)
 		unzipTo(fixture.getDslSample(dsl), temporaryFolder.testDirectory)
 
@@ -180,6 +186,18 @@ abstract class WellBehavingSampleTest extends Specification {
 		void execute(TestFile testDirectory) {
 			GradleExecuter executer = configureLocalPluginResolution(new GradleExecuterFactory().wrapper(TestFile.of(testDirectory)).withConsole(ConsoleOutput.Rich))
 
+			def initScript = testDirectory.file("init.gradle") << """
+				allprojects { p ->
+					apply plugin: ${toolChain.pluginClass}
+
+					model {
+						toolChains {
+							${toolChain.buildScriptConfig}
+						}
+					}
+				}
+			"""
+			executer = toolChain.configureExecuter(executer.usingInitScript(initScript))
 			command.args.each {
 				executer = executer.withArgument(it)
 			}
