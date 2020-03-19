@@ -256,7 +256,7 @@ abstract class WellBehavingSampleTest extends Specification {
 			stdout = stdout.readLines().collect { StringUtils.stripEnd(it, ' ') }.join('\n')
 
 			// TODO: Model the output instead of relying on poor-man string comparision
-			assert verify(command.expectedOutput.get(), stdout.replace(testDirectory.absolutePath, '/Users/daniel'))
+			verify(command.expectedOutput.get(), stdout.replace(testDirectory.absolutePath, '/Users/daniel'))
 		}
 
 		void verify(final String expected, final String actual) {
@@ -278,7 +278,7 @@ abstract class WellBehavingSampleTest extends Specification {
 				}
 			}
 
-			if (!(allowAdditionalOutput || unmatchedLines.isEmpty())) {
+			if (!unmatchedLines.isEmpty()) {
 				String unmatched = StringUtils.join(unmatchedLines, System.lineSeparator());
 				Assert.fail(String.format("Extra lines in output.%n%s%n---%nActual output:%n%s%n---", unmatched, actual));
 			}
