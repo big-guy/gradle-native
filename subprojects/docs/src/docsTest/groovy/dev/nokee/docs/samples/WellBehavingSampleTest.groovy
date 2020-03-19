@@ -1,8 +1,6 @@
 package dev.nokee.docs.samples
 
-
 import dev.gradleplugins.integtests.fixtures.nativeplatform.AvailableToolChains
-import dev.gradleplugins.integtests.fixtures.nativeplatform.ToolChainRequirement
 import dev.gradleplugins.spock.lang.CleanupTestDirectory
 import dev.gradleplugins.spock.lang.TestNameTestDirectoryProvider
 import dev.gradleplugins.test.fixtures.file.TestFile
@@ -137,7 +135,7 @@ abstract class WellBehavingSampleTest extends Specification {
 	AvailableToolChains.InstalledToolChain toolChain;
 	@Unroll
 	def "can execute commands successfully"(dsl) {
-		toolChain = AvailableToolChains.getToolChain(ToolChainRequirement.AVAILABLE)
+		toolChain = AvailableToolChains.getDefaultToolChain()
 
 		def fixture = new SampleContentFixture(sampleName)
 		unzipTo(fixture.getDslSample(dsl), temporaryFolder.testDirectory)
