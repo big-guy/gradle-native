@@ -11,10 +11,10 @@ public abstract class OnlyIfCondition {
 	public static OnlyIfCondition of(@Nullable String condition) {
 		if (condition == null) {
 			return new NoCondition();
-		} else if (condition == "macos") {
+		} else if (condition.equals("macos")) {
 			return new OnlyIfOperatingSystemIsMacOSCondition();
 		}
-		throw new IllegalArgumentException("only-if keyword only supports 'macos'");
+		throw new IllegalArgumentException(String.format("only-if keyword only supports 'macos', got %s", condition));
 	}
 
 	private static class NoCondition extends OnlyIfCondition {
