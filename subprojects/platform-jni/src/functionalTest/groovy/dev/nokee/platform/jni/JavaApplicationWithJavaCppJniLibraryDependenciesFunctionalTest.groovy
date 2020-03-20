@@ -76,15 +76,9 @@ class JavaApplicationWithJavaCppJniLibraryDependenciesFunctionalTest extends Abs
 
 			library {
 				linkage = [Linkage.STATIC]
-			}
-
-			tasks.withType(LinkSharedLibrary) {
-				linkerArgs.addAll(toolChain.map { toolChain ->
-					if (toolChain instanceof Gcc) {
-						return ['-fPIC']
-					}
-					return []
-				})
+				binaries.configureEach {
+					compileTask.get().positionIndependentCode = true
+				}
 			}
 		'''
 	}
@@ -152,15 +146,6 @@ class JavaApplicationWithJavaCppJniLibraryDependenciesFunctionalTest extends Abs
 					nativeImplementation 'com.example:cpp-library:4.2'
 				}
 			}
-
-			tasks.withType(LinkSharedLibrary) {
-				linkerArgs.addAll(toolChain.map { toolChain ->
-					if (toolChain instanceof Gcc) {
-						return ['-fPIC']
-					}
-					return []
-				})
-			}
 		'''
 		file('java-library/settings.gradle') << "rootProject.name = 'java-library'"
 		file('java-library/build.gradle') << '''
@@ -182,6 +167,9 @@ class JavaApplicationWithJavaCppJniLibraryDependenciesFunctionalTest extends Abs
 
 			library {
 				linkage = [Linkage.STATIC]
+				binaries.configureEach {
+					compileTask.get().positionIndependentCode = true
+				}
 			}
 		'''
 	}
