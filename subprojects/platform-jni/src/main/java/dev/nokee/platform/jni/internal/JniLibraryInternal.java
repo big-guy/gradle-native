@@ -21,7 +21,13 @@ import org.gradle.jvm.tasks.Jar;
 import org.gradle.language.cpp.CppBinary;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 public abstract class JniLibraryInternal implements JniLibrary {
 	private final NamingScheme names;
@@ -34,6 +40,7 @@ public abstract class JniLibraryInternal implements JniLibrary {
 	private final Configuration nativeRuntime;
 	private JniJarBinaryInternal jarBinary;
 	private Optional<SharedLibraryBinaryInternal> sharedLibraryBinary = Optional.empty();
+	private final TaskProvider<Task> assembleTask;
 
 	@Inject
 	public JniLibraryInternal(TaskContainer tasks, NamingScheme names, ObjectFactory objectFactory, ProviderFactory providers, ConfigurationContainer configurations, DomainObjectSet<? super LanguageSourceSetInternal> sources, Configuration implementation, DefaultTargetMachine targetMachine, GroupId groupId) {
@@ -57,7 +64,15 @@ public abstract class JniLibraryInternal implements JniLibrary {
 		getNativeRuntimeFiles().from(nativeRuntime);
 		getResourcePath().convention(providers.provider(() -> names.getResourcePath(groupId)));
 
-		registerAssembleTaskIfAbsent(tasks);
+		this.assembleTask = registerAssembleTaskIfAbsent(tasks);
+		assembleTask.configure(task -> {
+			task.dependsOn((Callable<List<TaskProvider<?>>>) () -> {
+				List<TaskProvider<?>> result = new ArrayList<>();
+				result.addAll(sharedLibraryBinary.map(it -> singletonList(it.getLinkTask())).orElse(emptyList()));
+				result.add(jarBinary.getJarTask());
+				return result;
+			});
+		});
 	}
 
 	private TaskProvider<Task> registerAssembleTaskIfAbsent(TaskContainer tasks) {
