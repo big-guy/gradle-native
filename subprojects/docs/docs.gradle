@@ -59,6 +59,7 @@ dependencies {
 	docsTestAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
 	docsTestImplementation 'org.apache.commons:commons-lang3:3.9'
+	docsTestImplementation 'org.hamcrest:hamcrest:2.2'
 
 	docsTestImplementation 'org.antlr:antlr4:4.8'
 	antlr "org.antlr:antlr4:4.8"

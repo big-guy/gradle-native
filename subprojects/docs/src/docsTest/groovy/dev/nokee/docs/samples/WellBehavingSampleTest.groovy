@@ -14,6 +14,7 @@ import dev.nokee.docs.fixtures.Command
 import dev.nokee.docs.fixtures.SampleContentFixture
 import dev.nokee.docs.fixtures.UnzipCommandHelper
 import groovy.transform.ToString
+import org.junit.Assume
 import org.junit.Rule
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -142,7 +143,7 @@ abstract class WellBehavingSampleTest extends Specification {
 
 		expect:
 		def c = wrap(fixture.getCommands())
-		c.size() > 0
+		Assume.assumeThat(c.size(), greaterThan(0));
 		c.each { it.execute(TestFile.of(temporaryFolder.testDirectory)) }
 
 		where:
