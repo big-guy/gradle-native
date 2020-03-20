@@ -143,9 +143,9 @@ abstract class WellBehavingSampleTest extends Specification {
 		def fixture = new SampleContentFixture(sampleName)
 		unzipTo(fixture.getDslSample(dsl), temporaryFolder.testDirectory)
 
-		expect:
 		def c = wrapAndGetExecutable(fixture.getCommands())
 		assumeThat(c.size(), greaterThan(0));
+		expect:
 		c.each { it.execute(TestFile.of(temporaryFolder.testDirectory)) }
 
 		where:
