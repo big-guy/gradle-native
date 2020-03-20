@@ -153,14 +153,14 @@ abstract class WellBehavingSampleTest extends Specification {
 	}
 
 	private List<? super Comm> wrapAndGetExecutable(List<Command> commands) {
-		commands.findAll { it.canExecute() }.collect { convert(it) }
+		return commands.findAll { it.canExecute() }.collect { convert(it) }
 	}
 
 	private List<? super Comm> wrap(List<Command> commands) {
-		commands.collect { convert(it) }
+		return commands.collect { convert(it) }
 	}
 
-	private static Comm convert(Command command) {
+	protected Comm convert(Command command) {
 		if (command.executable == './gradlew') {
 			return new GradleWrapperCommand(command)
 		} else if (command.executable == 'ls') {
