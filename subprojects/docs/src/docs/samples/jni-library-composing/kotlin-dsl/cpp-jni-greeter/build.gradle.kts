@@ -22,6 +22,6 @@ library {
 				else -> emptyList()
 			}
 		})
-		compileTask.get().positionIndependentCode = true
+		compileTask.get().setPositionIndependentCode(true)
 	}
 }
