@@ -153,11 +153,11 @@ abstract class WellBehavingSampleTest extends Specification {
 	}
 
 	private List<? super Comm> wrapAndGetExecutable(List<Command> commands) {
-		commands.findAll { it.canExecute() }.collect(WellBehavingSampleTest::convert)
+		commands.findAll { it.canExecute() }.collect { convert(it) }
 	}
 
 	private List<? super Comm> wrap(List<Command> commands) {
-		commands.collect(WellBehavingSampleTest::convert)
+		commands.collect { convert(it) }
 	}
 
 	private static Comm convert(Command command) {
