@@ -42,7 +42,7 @@ class JniLibraryTargetMachinesFunctionalTest extends AbstractTargetMachinesFunct
 
 	@Override
 	protected String getTaskNameToAssembleDevelopmentBinaryWithArchitecture(String architecture) {
-		return "main${architecture.capitalize()}SharedLibrary"
+		return "assemble${architecture.capitalize()}"
 	}
 
 	@Override

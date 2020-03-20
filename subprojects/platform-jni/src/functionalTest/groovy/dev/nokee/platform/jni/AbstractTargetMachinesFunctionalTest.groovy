@@ -110,7 +110,7 @@ abstract class AbstractTargetMachinesFunctionalTest extends AbstractInstalledToo
 		buildFile << configureTargetMachines("machines.${currentHostOperatingSystemFamilyDsl}.x86", "machines.${currentHostOperatingSystemFamilyDsl}.x86_64")
 
 		expect:
-		succeeds getTaskNameToAssembleDevelopmentBinaryWithArchitecture(currentOsFamilyName + DefaultMachineArchitecture.X86.name), getTaskNameToAssembleDevelopmentBinaryWithArchitecture(currentOsFamilyName + DefaultMachineArchitecture.X86_64.name)
+		succeeds getTaskNameToAssembleDevelopmentBinaryWithArchitecture(DefaultMachineArchitecture.X86.name), getTaskNameToAssembleDevelopmentBinaryWithArchitecture(DefaultMachineArchitecture.X86_64.name)
 		assertComponentUnderTestWasBuilt(DefaultMachineArchitecture.X86.name)
 		assertComponentUnderTestWasBuilt(DefaultMachineArchitecture.X86_64.name)
 	}

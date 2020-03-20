@@ -7,6 +7,7 @@ import dev.nokee.platform.jni.JniLibrary;
 import dev.nokee.platform.nativebase.internal.DefaultTargetMachine;
 import dev.nokee.platform.nativebase.internal.SharedLibraryBinaryInternal;
 import org.gradle.api.DomainObjectSet;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.attributes.Usage;
@@ -35,7 +36,7 @@ public abstract class JniLibraryInternal implements JniLibrary {
 	private Optional<SharedLibraryBinaryInternal> sharedLibraryBinary = Optional.empty();
 
 	@Inject
-	public JniLibraryInternal(NamingScheme names, ObjectFactory objectFactory, ProviderFactory providers, ConfigurationContainer configurations, DomainObjectSet<? super LanguageSourceSetInternal> sources, Configuration implementation, DefaultTargetMachine targetMachine, GroupId groupId) {
+	public JniLibraryInternal(TaskContainer tasks, NamingScheme names, ObjectFactory objectFactory, ProviderFactory providers, ConfigurationContainer configurations, DomainObjectSet<? super LanguageSourceSetInternal> sources, Configuration implementation, DefaultTargetMachine targetMachine, GroupId groupId) {
 		this.names = names;
 		binaries = objectFactory.domainObjectSet(BinaryInternal.class);
 		this.configurations = configurations;
@@ -55,6 +56,16 @@ public abstract class JniLibraryInternal implements JniLibrary {
 		});
 		getNativeRuntimeFiles().from(nativeRuntime);
 		getResourcePath().convention(providers.provider(() -> names.getResourcePath(groupId)));
+
+		registerAssembleTaskIfAbsent(tasks);
+	}
+
+	private TaskProvider<Task> registerAssembleTaskIfAbsent(TaskContainer tasks) {
+		String assembleTaskName = names.getTaskName("assemble");
+		if (assembleTaskName.equals("assemble")) {
+			return tasks.named(assembleTaskName);
+		}
+		return tasks.register(assembleTaskName);
 	}
 
 	@Inject
