@@ -14,13 +14,15 @@ import dev.nokee.docs.fixtures.Command
 import dev.nokee.docs.fixtures.SampleContentFixture
 import dev.nokee.docs.fixtures.UnzipCommandHelper
 import groovy.transform.ToString
-import org.junit.Assume
 import org.junit.Rule
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
+
+import static org.hamcrest.Matchers.greaterThan
+import static org.junit.Assume.assumeThat
 
 @CleanupTestDirectory
 abstract class WellBehavingSampleTest extends Specification {
@@ -142,27 +144,33 @@ abstract class WellBehavingSampleTest extends Specification {
 		unzipTo(fixture.getDslSample(dsl), temporaryFolder.testDirectory)
 
 		expect:
-		def c = wrap(fixture.getCommands())
-		Assume.assumeThat(c.size(), greaterThan(0));
+		def c = wrapAndGetExecutable(fixture.getCommands())
+		assumeThat(c.size(), greaterThan(0));
 		c.each { it.execute(TestFile.of(temporaryFolder.testDirectory)) }
 
 		where:
 		dsl << [GradleScriptDsl.GROOVY_DSL, GradleScriptDsl.KOTLIN_DSL]
 	}
 
+	private List<? super Comm> wrapAndGetExecutable(List<Command> commands) {
+		commands.findAll { it.canExecute() }.collect(WellBehavingSampleTest::convert)
+	}
+
 	private List<? super Comm> wrap(List<Command> commands) {
-		commands.findAll { it.canExecute() }.collect { command ->
-			if (command.executable == './gradlew') {
-				return new GradleWrapperCommand(command)
-			} else if (command.executable == 'ls') {
-				return new ListDirectoryCommand(command)
-			} else if (command.executable == 'mv') {
-				return new MoveFilesCommand(command)
-			} else if (command.executable == 'unzip') {
-				return new UnzipCommand(command)
-			}
-			return new GenericCommand(command)
+		commands.collect(WellBehavingSampleTest::convert)
+	}
+
+	private static Comm convert(Command command) {
+		if (command.executable == './gradlew') {
+			return new GradleWrapperCommand(command)
+		} else if (command.executable == 'ls') {
+			return new ListDirectoryCommand(command)
+		} else if (command.executable == 'mv') {
+			return new MoveFilesCommand(command)
+		} else if (command.executable == 'unzip') {
+			return new UnzipCommand(command)
 		}
+		return new GenericCommand(command)
 	}
 
 	@ToString
