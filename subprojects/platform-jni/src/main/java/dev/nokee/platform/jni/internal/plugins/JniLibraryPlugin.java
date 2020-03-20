@@ -97,13 +97,16 @@ public abstract class JniLibraryPlugin implements Plugin<Project> {
 					library.registerSharedLibraryBinary();
 				}
 
-				TaskProvider<Jar> jvmJarTask = project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class);
 				if (proj.getPluginManager().hasPlugin("java") && targetMachines.size() == 1) {
+					TaskProvider<Jar> jvmJarTask = project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class);
 					library.registerJniJarBinary(jvmJarTask);
+					library.getAssembleTask().configure(task -> task.dependsOn(jvmJarTask));
 				} else {
 					library.registerJniJarBinary();
+					// FIXME: There is a gap here, if the project doesn't have any JVM plugin applied but specify multiple target machine what is expected?
+					//   Only JNI Jar? or an empty JVM Jar and JNI Jar?... Hmmm....
 				}
-				library.getAssembleTask().configure(task -> task.dependsOn(jvmJarTask));
+
 
 				// Attach JNI Jar to assemble task
 				if (DefaultTargetMachine.isTargetingHost().test(targetMachine)) {
