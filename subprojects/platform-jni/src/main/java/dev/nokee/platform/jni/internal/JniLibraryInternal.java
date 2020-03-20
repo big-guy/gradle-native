@@ -129,4 +129,8 @@ public abstract class JniLibraryInternal implements JniLibrary {
 	public DefaultTargetMachine getTargetMachine() {
 		return targetMachine;
 	}
+
+	public TaskProvider<Task> getAssembleTask() {
+		return assembleTask;
+	}
 }

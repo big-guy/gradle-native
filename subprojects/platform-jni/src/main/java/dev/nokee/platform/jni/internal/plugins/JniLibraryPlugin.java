@@ -96,11 +96,14 @@ public abstract class JniLibraryPlugin implements Plugin<Project> {
 				if (proj.getPluginManager().hasPlugin("dev.nokee.cpp-language") || proj.getPluginManager().hasPlugin("dev.nokee.c-language")) {
 					library.registerSharedLibraryBinary();
 				}
+
+				TaskProvider<Jar> jvmJarTask = project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class);
 				if (proj.getPluginManager().hasPlugin("java") && targetMachines.size() == 1) {
-					library.registerJniJarBinary(project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class));
+					library.registerJniJarBinary(jvmJarTask);
 				} else {
 					library.registerJniJarBinary();
 				}
+				library.getAssembleTask().configure(task -> task.dependsOn(jvmJarTask));
 
 				// Attach JNI Jar to assemble task
 				if (DefaultTargetMachine.isTargetingHost().test(targetMachine)) {
