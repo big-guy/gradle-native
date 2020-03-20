@@ -103,8 +103,12 @@ public abstract class JniLibraryPlugin implements Plugin<Project> {
 					library.getAssembleTask().configure(task -> task.dependsOn(jvmJarTask));
 				} else {
 					library.registerJniJarBinary();
-					// FIXME: There is a gap here, if the project doesn't have any JVM plugin applied but specify multiple target machine what is expected?
-					//   Only JNI Jar? or an empty JVM Jar and JNI Jar?... Hmmm....
+					if (proj.getPluginManager().hasPlugin("java")) {
+						library.getAssembleTask().configure(task -> task.dependsOn(project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class)));
+					} else {
+						// FIXME: There is a gap here, if the project doesn't have any JVM plugin applied but specify multiple target machine what is expected?
+						//   Only JNI Jar? or an empty JVM Jar and JNI Jar?... Hmmm....
+					}
 				}
 
 
