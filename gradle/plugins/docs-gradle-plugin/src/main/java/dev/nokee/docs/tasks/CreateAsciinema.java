@@ -1,6 +1,9 @@
 package dev.nokee.docs.tasks;
 
 import dev.nokee.docs.PluginManagementBlock;
+import lombok.NonNull;
+import lombok.Value;
+import lombok.With;
 import org.apache.commons.io.FileUtils;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.ast.Block;
@@ -103,7 +106,8 @@ public abstract class CreateAsciinema extends ProcessorTask {
 
 		private void primeGradle() {
 			getExecOperations().exec(spec -> {
-				spec.commandLine("./gradlew", "help");
+//				spec.commandLine("./gradlew", "help");
+				spec.commandLine("gradle", "help");
 				spec.setWorkingDir(getParameters().getSource().get().getAsFile());
 				try {
 					File logFile = getParameters().getLogFile().get().getAsFile();
@@ -142,7 +146,12 @@ public abstract class CreateAsciinema extends ProcessorTask {
 
 		private void recordToAsciicastFile(Command command) {
 			exec("asciinema", "rec", "-c echo " + command.commandLine.get(), "--append", outputFile.getAbsolutePath());
-			exec("asciinema", "rec", "-c " + command.commandLine.get(), "--append", outputFile.getAbsolutePath());
+
+			if (command.commandLine.executable.equals("./gradlew")) {
+				exec("asciinema", "rec", "-c " + command.commandLine.withExecutable("gradle").get(), "--append", outputFile.getAbsolutePath());
+			} else {
+				exec("asciinema", "rec", "-c " + command.commandLine.get(), "--append", outputFile.getAbsolutePath());
+			}
 			exec("asciinema", "rec", "-c printf '$ '", "--append", outputFile.getAbsolutePath());
 			exec("asciinema", "rec", "-c sleep 1", "--append", outputFile.getAbsolutePath());
 		}
@@ -192,9 +201,10 @@ public abstract class CreateAsciinema extends ProcessorTask {
 		Property<String> getArchiveBaseName();
 	}
 
+	@Value
 	public static class CommandLine {
-		private final String executable;
-		private final List<String> arguments;
+		@With @NonNull String executable;
+		@NonNull List<String> arguments;
 
 		private CommandLine(String executable, List<String> arguments) {
 			this.executable = executable;

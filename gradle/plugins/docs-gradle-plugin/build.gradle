@@ -25,4 +25,8 @@ dependencies {
 	implementation 'commons-io:commons-io:2.6'
 	implementation 'org.jbake:jbake-gradle-plugin:5.0.0'
 	implementation 'com.google.guava:guava:28.2-jre'
+
+	def lombokVersion = '1.18.12'
+	compileOnly "org.projectlombok:lombok:${lombokVersion}"
+	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
